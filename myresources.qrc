@@ -1,0 +1,28 @@
+<RCC>
+<qresource>
+
+        <file alias="security.png">icons/security.png</file>
+        <file alias="database.png">icons/database.png</file>
+        <file alias="statistics.png">icons/statistics.png</file>
+        <file alias="turn_off.png">icons/turn_off.png</file>
+        <file alias="shield.png">icons/shield.png</file>
+        <file alias="warning.png">icons/warning.png</file>
+        <file alias="securitylock.png">icons/securitylock.png</file>
+        <file alias="write.png">icons/write.png</file>
+        <file alias="disk.png">icons/disk.png</file>
+        <file alias="user.png">icons/user.png</file>
+        <file alias="calendar.png">icons/calendar.png</file>
+        <file alias="search.png">icons/search.png</file>
+        <file alias="mail.png">icons/mail.png</file>
+        <file alias="clock.png">icons/clock.png</file>
+        <file alias="shield.png">icons/shield.png</file>
+        <file alias="compass.png">icons/compass.png</file>
+        <file alias="graduation.png">icons/graduation.png</file>
+        <file alias="man.png">icons/man.png</file>
+        <file alias="diamond.png">icons/diamond.png</file>
+        <file alias="share.png">icons/share.png</file>
+        <file alias="webpage.png">icons/webpage.png</file>
+        <file alias="page.png">icons/page.png</file>
+        <file alias="group.png">icons/group.png</file>
+</qresource>
+</RCC>
