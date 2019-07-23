@@ -16,12 +16,66 @@ class Origin(QWidget):
     def main_func(self):
 
         self.session = QComboBox()
-        self.session.addItem('2018/2019')
-        self.session.addItem('2019/2020')
-        self.session.addItem('2020/2021')
-        self.session.addItem('2021/2022')
-        self.session.addItem('2022/2023')
-
+        self.session_label = QLabel()
+        self.session_label.setObjectName('sessionlabel')
+        sessions = ['2018/2019','2019/2020','2020/2021','2021/2022','2022/2023','2023/2024','2024/2025',
+                    '2025/2026','2026/2027','2027/2028','2028/2029','2029/2030','2030/2031','2031/2032',
+                    '2032/2033','2033/3034','2034/2035','2035/2036','2036/2037','2037/2038','2038/2039',
+                    '2039/2040','2040/2041','2041/2042','2042/2043','2043/2044','2044/2045','2045/2046']
+        for i in sessions:
+            self.session.addItem(i)
+        today = date.today()
+        today_str = today.strftime("%Y/%m/%d")
+        current_year = (today_str[0:4])
+        for i in sessions:
+            the_index = sessions.index(i)
+            i = i.split('/')
+            this_year = i[1]
+            if this_year == current_year:
+                self.session.setCurrentIndex(the_index)
+            else:
+                pass
+        def session_changed():
+            conn = sqlite3.connect('reminders.db')
+            cursor = conn.cursor()
+            cursor.execute(''' SELECT matno FROM PERSONS ''')
+            matric_tuple = cursor.fetchall()
+            matric_list = []
+            session = self.session.currentText()
+            self.session_label.setText('Current Session In Use : {}'.format(session))
+            current_year = session.split('/')
+            current_year = current_year[1]
+            current_year = int(current_year)
+            for i in matric_tuple:
+                i = i[0]
+                matric_list.append(i)
+            # print(matric_list)
+            for mat in matric_list:
+                i = mat.split('/')
+                entry_year = i[0]
+                entry_year = int(entry_year)
+                type_det = i[1]
+                entry_type = ''
+                if type_det == '1':
+                    entry_type = 'UTME'
+                else:
+                    entry_type = 'DE'
+                if entry_type == 'UTME':
+                    current_level = (current_year - entry_year) * 100
+                    current_level = str(current_level)
+                    # print('current level: {}'.format(current_level))
+                    cursor.execute(''' UPDATE PERSONS SET level = (?) where matno = (?)''', (current_level, mat))
+                    conn.commit()
+                elif entry_type == 'DE':
+                    current_level = ((current_year - entry_year) + 1) * 100
+                    current_level = str(current_level)
+                    # print( 'current level: {}'.format(current_level))
+                    cursor.execute(''' UPDATE PERSONS SET level = (?) where matno = (?)''', (current_level, mat))
+                    conn.commit()
+                else:
+                    print('else is available for checking ')
+        session_changed()
+        self.session.currentIndexChanged.connect(session_changed)
         self.vbox = QVBoxLayout()
         self.vbox_btn = QVBoxLayout()
         self.hbox1 = QHBoxLayout()
@@ -38,9 +92,11 @@ class Origin(QWidget):
         self.btn_mod_dept = QPushButton(' Modify Deparments')
         self.btn_mod_dept.clicked.connect(self.mod_dept_action)
         self.btn_search = QPushButton('Search Member')
+        self.btn_search.clicked.connect(self.search_action)
         self.btn_mod_unit = QPushButton('Modify Units')
         self.btn_mod_unit.clicked.connect(self.mod_unit_action)
-        self.btn_remove = QPushButton('Remove Member')
+        self.btn_grad = QPushButton('Graduated \n (Above 500)')
+        self.btn_grad.clicked.connect(self.graduated_action)
         self.btn_message = QPushButton('Text message')
         self.lb_notice = QLabel('Birthday Notifications')
         self.notice_area.addWidget(self.lb_notice,1,0)
@@ -49,16 +105,16 @@ class Origin(QWidget):
         self.hbox2.addWidget(self.btn_add)
         self.hbox2.addWidget(self.btn_edit)
         self.hbox2.addWidget(self.btn_view)
-        self.hbox2.addWidget(self.btn_remove)
+        self.hbox2.addWidget(self.btn_grad)
         self.vbox_btn.addLayout(self.hbox3)
         self.vbox_btn.addLayout(self.hbox2)
-        self.btn_remove.setObjectName('first')
-        firstbuttons = [self.btn_add,self.btn_edit,self.btn_view,self.btn_search,self.btn_remove,self.btn_message,self.btn_mod_unit,self.btn_mod_dept]
+        self.btn_grad.setObjectName('first')
+        firstbuttons = [self.btn_add,self.btn_edit,self.btn_view,self.btn_search,self.btn_grad,self.btn_message,self.btn_mod_unit,self.btn_mod_dept]
         for i in firstbuttons:
             i.setObjectName('megabutton')
         #self.btn_add.setObjectName('megabutton')
         ##################################################################################
-        # creating and poditioning widgets for the notification sidebar layout ###########
+        # creating and positioning widgets for the notification sidebar layout ###########
         ##################################################################################
         bmonth_listwidget = QListWidget()
         bmonth_listwidget.setAlternatingRowColors(True)
@@ -122,23 +178,190 @@ class Origin(QWidget):
         self.hbox3.addWidget(self.btn_mod_unit)
         self.hbox3.addWidget(self.btn_message)
         self.vbox.addWidget(self.session)
+        self.vbox.addWidget(self.session_label)
         self.vbox.addLayout(self.hbox1)
         #self.vbox.addLayout(self.hbox2)
         #self.vbox.addLayout(self.hbox3)
         self.setLayout(self.vbox)
-        '''qr = self.frameGeometry()
-        cp = QDesktopWidget().availableGeometry().center()
-        qr.moveCenter(cp)
-        self.move(qr.topLeft())'''
-        #self.setGeometry(400, 300, 700, 500)
         self.showMaximized()
+        self.setWindowTitle('Voithos')
+        self.setWindowIcon(QIcon(':/security.png'))
+        self.setWindowIconText('Voithos')
         self.setMinimumHeight(600)
         self.setMinimumWidth(850)
+    def graduated_action(self):
+        grad_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
+        grad_dlg.setWindowIcon(QIcon(':/graduation.png'))
+        grad_dlg.setWindowTitle('Voithos')
+        hbox = QHBoxLayout()
+        vbox_main = QVBoxLayout(grad_dlg)
+        btn_delete = QPushButton('Delete All ')
+        btn_back = QPushButton('Back')
+        del_label = QLabel('Before deleting, Ensure that the current session is valid to avoid mistakes.')
+        hbox.addWidget(btn_delete)
+        hbox.addWidget(del_label)
+        hbox.addWidget(btn_back)
+        table_grad = QTableWidget()
+        #table_grad.cellDoubleClicked.connect(test_action)
+        table_grad.setColumnCount(11)
+        table_grad.setHorizontalHeaderLabels(
+            ['Lastname', 'Firstname', 'Middlename', 'Department', 'Matric no', 'Gender', 'Address', 'Date Of Birth',
+             'Phone Number',
+             'Unit', 'Level'])
+        vbox_main.addLayout(hbox)
+        vbox_main.addWidget(table_grad)
+        table_grad.setEditTriggers(QTableWidget.NoEditTriggers)
+        table_grad.setSelectionBehavior(QTableWidget.SelectRows)
+        table_grad.setSelectionMode(QTableWidget.SingleSelection)
+        def grad_close():
+            grad_dlg.close()
+        def fill_grad():
+            conn = sqlite3.connect('reminders.db')
+            cursor = conn.cursor()
+            cursor.execute(''' DELETE FROM GRADUATES ''')
+            conn.commit()
+            cursor.execute(''' SELECT * FROM PERSONS ''')
+            all = cursor.fetchall()
+            for person in all:
+                level = person[10]
+                int_level = int(level)
+                if int_level >= 600:
+                    cursor.execute(''' INSERT into GRADUATES(lastname, firstname, middlename, department, matno, gender, address, dateofbirth,phonenumber, unit, level) VALUES(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)''',(person[0], person[1], person[2], person[3],person[4], person[5], person[6], person[7], person[8], person[9], person[10]))
+                    conn.commit()
+                else:
+                    pass
+            cursor.execute(''' SELECT * FROM GRADUATES ''')
+            data = cursor.fetchall()
+            #print(data)
+            for row_number, row_data in enumerate(data):
+                table_grad.insertRow(row_number)
+                for column_number, column_data in enumerate(row_data):
+                    table_grad.setItem(row_number, column_number, QTableWidgetItem(str(column_data)))
+            cursor.execute(''' SELECT matno FROM GRADUATES ''')
+            data = cursor.fetchall()
+            self.grad_list = []
+            for i in data:
+                self.grad_list.append(i[0])
+            conn.close()
+            def grad_delete():
+                msgbox = QMessageBox(self,)
+                x = self.session.currentText()
+                text = ('Ensure {} is the current session before deleting \n Are you sure you want to Delete all Graduates permanently ? \n This action cannot be undone.'.format(x))
 
+                msgbox.setText(text)
+                msgbox.setWindowTitle(' Confirm Delete ')
+                msgbox.setStandardButtons(QMessageBox.Ok | QMessageBox.Cancel)
+                def delete_grad(i):
+                    conn = sqlite3.connect('reminders.db')
+                    cursor = conn.cursor()
+                    msgbtn_text = i.text()
+                    if msgbtn_text == 'OK':
+                        #print(self.grad_list)
+                        for i in self.grad_list:
+                            cursor.execute(''' DELETE FROM GRADUATES where matno = (?) ''', (i,))
+                            cursor.execute(''' DELETE FROM PERSONS where matno = (?) ''', (i,))
+                        conn.commit()
+                        text2 = (' All the Graduates has been successfully deleted from the database')
+                        #print('at that point')
+                        del_msg_box = QMessageBox(self, )
+                        del_msg_box.setText(text2)
+                        del_msg_box.setWindowTitle('Successfully Deleted')
+                        del_msg_box.setWindowIcon(QIcon(':/database.png'))
+                        del_msg_box.exec_()
+
+                    elif msgbtn_text == 'Cancel':
+                        msgbox.close()
+                    else:
+                        print('none of the above')
+                conn.close()
+                msgbox.buttonClicked.connect(delete_grad)
+                msgbox.setWindowIcon(QIcon(':/warning.png'))
+                msgbox.exec_()
+
+            #conn.close()
+            btn_delete.clicked.connect(grad_delete)
+        btn_back.clicked.connect(grad_close)
+        fill_grad()
+        grad_dlg.setMinimumHeight(600)
+        grad_dlg.setMinimumWidth(1200)
+        grad_dlg.showMaximized()
+        grad_dlg.exec_()
+
+    def search_action(self):
+        conn = sqlite3.connect('reminders.db')
+        cursor = conn.cursor()
+        search_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint )
+        search_dlg.setWindowIcon(QIcon(':/search.png'))
+        grid = QGridLayout(search_dlg)
+        listwidget = QListWidget()
+        lb_hint = QLabel('Enter Only A Single Name')
+        lb_search = QLabel(' Name: ')
+        le_search = QLineEdit()
+        le_search.setObjectName('search')
+        le_regex = QRegExp(r"[a-z]*")
+        le_search.setValidator(QRegExpValidator(le_regex, self))
+        btn_search = QPushButton('Search')
+        btn_cancel = QPushButton('Cancel')
+        def search_clicked():
+            listwidget.clear()
+            name = le_search.text()
+            name = name.capitalize()
+            if name == '':
+                empty_box = QMessageBox(self, )
+                empty_box.setWindowTitle('Notification')
+                empty_box.setText('Enter a name.\nThe Lineedit Cannot Be Empty')
+                empty_box.setWindowIcon(QIcon(':/warning.png'))
+                empty_box.exec_()
+            else:
+                conn = sqlite3.connect('reminders.db')
+                cursor = conn.cursor()
+
+                name_tuple = []
+                cursor.execute(''' SELECT matno FROM PERSONS WHERE lastname = (?) ''', (name,))
+                item = cursor.fetchall()
+                for i in item:
+                    name_tuple.append(i)
+                cursor.execute(''' SELECT matno FROM PERSONS WHERE firstname = (?) ''', (name,))
+                item = cursor.fetchall()
+                for i in item:
+                    name_tuple.append(i)
+                cursor.execute(''' SELECT matno FROM PERSONS WHERE middlename = (?) ''', (name,))
+                item = cursor.fetchall()
+                for i in item:
+                    name_tuple.append(i)
+                mat_list = []
+                for i in name_tuple:
+                    mat_list.append(i[0])
+                mat_list = list(dict.fromkeys(mat_list))
+                for i in mat_list:
+                    cursor.execute(""" SELECT lastname, firstname, middlename, department,matno,gender,address,dateofbirth,
+                         phonenumber,unit,level FROM PERSONS WHERE matno = (?) """, (i,))
+                    data = cursor.fetchall()
+                    for x in data:
+                        text = ('Name: {} {} {}\n Gender: {}\n Date Of Birth: {}\n Dept: {} \n Matric: {}' 
+                                '\n PhoneNumber: {}\n Unit(s): {}   \n Address: {} \n '.format(x[0],x[1],x[2],x[5],x[7],x[3],x[4],x[8],x[9],x[6]))
+                        listwidget.addItem(text)
+                if name_tuple ==[]:
+                    text_not_found = ('\n \n  No student was found bearing this name  \n')
+                    listwidget.addItem(text_not_found)
+        def search_dlg_close():
+            search_dlg.close()
+        btn_cancel.clicked.connect(search_dlg_close)
+        btn_search.clicked.connect(search_clicked)
+        grid.addWidget(lb_hint, 0, 0)
+        grid.addWidget(lb_search, 1, 0)
+        grid.addWidget(le_search, 1, 1)
+        grid.addWidget(btn_cancel, 2, 0)
+        grid.addWidget(btn_search, 2, 1)
+        grid.addWidget(listwidget, 3, 1)
+        search_dlg.setWindowTitle('Search Student')
+        search_dlg.setFixedWidth(500)
+        search_dlg.setMaximumHeight(500)
+        search_dlg.exec_()
     def mod_unit_action(self):
         conn = sqlite3.connect('reminders.db')
         cursor = conn.cursor()
-        mod_unit_dlg = QDialog(self, )
+        mod_unit_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint )
         mod_unit_dlg.setWindowIcon(QIcon(':/compass.png'))
         grid = QGridLayout(mod_unit_dlg)
         listwidget = QListWidget()
@@ -147,10 +370,9 @@ class Origin(QWidget):
         le_regex = QRegExp(r"[a-z\s]*")
         le_unit.setValidator(QRegExpValidator(le_regex, self))
 
-           btn_add = QPushButton('Add Department')
+        btn_add = QPushButton('Add Unit')
         btn_cancel = QPushButton('Cancel')
-        btn_add = QPushButton('Add Department')
-        btn_cancel = QPushButton('Cancel')
+
         def fill_unit():
             cursor.execute(''' SELECT unit FROM ALL_UNITS ''')
             data = cursor.fetchall()
@@ -233,12 +455,14 @@ class Origin(QWidget):
         grid.addWidget(btn_add, 2, 1)
         grid.addWidget(listwidget, 3, 1)
         mod_unit_dlg.setWindowTitle('Modify Units')
+        mod_unit_dlg.setMaximumWidth(450)
+        mod_unit_dlg.setMaximumHeight(450)
         mod_unit_dlg.exec_()
 
     def mod_dept_action(self):
         conn = sqlite3.connect('reminders.db')
         cursor = conn.cursor()
-        mod_dlg = QDialog(self, )
+        mod_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         mod_dlg.setWindowIcon(QIcon(':/graduation.png'))
         grid = QGridLayout(mod_dlg)
         listwidget = QListWidget()
@@ -333,12 +557,14 @@ class Origin(QWidget):
         grid.addWidget(btn_add, 2, 1)
         grid.addWidget(listwidget, 3, 1)
         mod_dlg.setWindowTitle('Modify Department')
+        mod_dlg.setMaximumWidth(450)
+        mod_dlg.setMaximumHeight(450)
         mod_dlg.exec_()
 
     def add_dlg(self):
         conn = sqlite3.connect('reminders.db')
         cursor = conn.cursor()
-        dlg = QDialog(self,)
+        dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         dlg.setWindowIcon(QIcon(':/man.png'))
         grid = QGridLayout(dlg)
         self.lb_lastname = QLabel('Last Name:')
@@ -352,10 +578,12 @@ class Origin(QWidget):
         self.le_fname = QLineEdit()
         self.le_mname = QLineEdit()
         # adding regex to the lastname, firstname, and middlename lineedits
-        name_regex = QRegExp(r"[\w]*")
+        address_regex = QRegExp(r".{1,40}")
+        name_regex = QRegExp(r"[a-z-]{1,20}")
         self.le_lname.setValidator(QRegExpValidator(name_regex,self))
         self.le_fname.setValidator(QRegExpValidator(name_regex, self))
         self.le_mname.setValidator(QRegExpValidator(name_regex, self))
+        self.le_address.setValidator(QRegExpValidator(address_regex,self))
         self.lb_gender = QLabel('Gender: ')
         matno_regex = QRegExp(r"\d{4}[/]\d[/]\d{5}[A-Z]{2}")
         self.lb_matno = QLabel('Matric Number: ')
@@ -446,9 +674,13 @@ class Origin(QWidget):
 
             #obtaining my values from the various data widgets in order to store into the application's database
             lastname = self.le_lname.text()
+            lastname = lastname.capitalize()
             firstname = self.le_fname.text()
+            firstname = firstname.capitalize()
             middlename = self.le_mname.text()
+            middlename = middlename.capitalize()
             address = self.le_address.text()
+            address = address.capitalize()
             gender = self.gender.currentText()
             department = self.dept_combo.currentText()
             matno = self.le_matno.text()
@@ -544,7 +776,7 @@ class Origin(QWidget):
     def the_edit(self,matric):
         conn =sqlite3.connect('reminders.db')
         cursor = conn.cursor()
-        edit_dlg = QDialog(self,)
+        edit_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         edit_dlg.setWindowIcon(QIcon(':/write.png'))
         grid = QGridLayout(edit_dlg)
         self.elb_lastname = QLabel('Last Name:')
@@ -558,10 +790,12 @@ class Origin(QWidget):
         self.ele_fname = QLineEdit()
         self.ele_mname = QLineEdit()
         # adding regex to the lastname, firstname, and middlename lineedits
-        name_regex = QRegExp(r"[\w]*")
+        address_regex = QRegExp(r".{1,40}")
+        name_regex = QRegExp(r"[a-z-]{1,20}")
         self.ele_lname.setValidator(QRegExpValidator(name_regex,self))
         self.ele_fname.setValidator(QRegExpValidator(name_regex, self))
         self.ele_mname.setValidator(QRegExpValidator(name_regex, self))
+        self.ele_address.setValidator(QRegExpValidator(address_regex,self))
         self.elb_gender = QLabel('Gender: ')
         matno_regex = QRegExp(r"\d{4}[/]\d[/]\d{5}[A-Z]{2}")
         self.elb_matno = QLabel('Matric Number: ')
@@ -794,8 +1028,9 @@ class Origin(QWidget):
 
     def view_action(self):
 
-        dlg = QDialog(self,)
+        dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
         dlg.setWindowIcon(QIcon(':/man.png'))
+        dlg.setWindowTitle('Voithos')
         vbox_main = QVBoxLayout(dlg)
         tabwidget = QTabWidget()
         self.present_tab = (tabwidget.currentIndex())
@@ -815,23 +1050,21 @@ class Origin(QWidget):
             holder.addWidget(btn)
             btn.setCheckable(True)
         def  test_action():
-            opt_dlg = QDialog(self,)
+            opt_dlg = QDialog(self, Qt.WindowSystemMenuHint | Qt.WindowTitleHint)
             opt_dlg.setWindowIcon(QIcon(':/compass.png'))
+            opt_dlg.setWindowTitle('Options')
             opt_grid = QGridLayout(opt_dlg)
-            geom = self.frameGeometry()
-            geom.moveCenter(QCursor.pos())
-            opt_dlg.setGeometry(geom)
             opt_listwidget = QListWidget()
             opt_cancel = QPushButton('Cancel ')
             opt_listwidget.addItem('Edit Student')
             opt_listwidget.addItem('Delete Student')
             opt_grid.addWidget(opt_listwidget,1,1)
             opt_grid.addWidget(opt_cancel, 2, 1)
-            opt_dlg.setFixedHeight(100)
-            opt_dlg.setFixedWidth(100)
-            opt_dlg.setModal(True)
+            opt_dlg.setFixedHeight(120)
+            opt_dlg.setFixedWidth(130)
             self.present_tab = (tabwidget.currentIndex())
             self.table_locator()
+
 
             def edit_and_delete_action():
                 item = opt_listwidget.currentItem()
@@ -841,7 +1074,7 @@ class Origin(QWidget):
                     opt_dlg.close()
                     self.the_edit(self.dmat)
                 elif senderz == 'Delete Student':
-                    #self.table_locator()
+                    opt_dlg.close()
                     text = ('Are you sure you want to delete the student \n with the matricnumber {}'.format(self.dmat))
                     def msg_del_action(i):
                         msgbtn_text = i.text()
@@ -951,7 +1184,7 @@ class Origin(QWidget):
         genderlayout = QVBoxLayout()
         self.table_gender = QTableWidget()
         self.table_gender.setColumnCount(11)
-        self.table_gender.cellClicked.connect(test_action)
+        self.table_gender.cellDoubleClicked.connect(test_action)
         self.table_gender.setHorizontalHeaderLabels(
             ['Lastname', 'Firstname', 'Middlename', 'Department', 'Matric no', 'Gender', 'Address', 'Date Of Birth', 'Phone Number',
              'Unit', 'Level'])
@@ -1093,18 +1326,20 @@ style = """
                         font-size:12px; min-height:80px; min-width: 120px;}
         QPushButton#megabutton:hover{color:white; background-color: grey;  }
         QPushButton:hover{color:white; background-color: grey;  }
-        QComboBox {border: 1px solid gray; background-color:lightgrey; border-radius: 4px; padding: 1px 18px 1px 3px; min-width: 25px;}
+        QComboBox {border: 1px solid gray; background-color:lightgrey; border-radius: 4px; padding: 1px 18px 1px 3px; min-width: 25px; max-width:250px;}
         QLineEdit {border:1px solid lightgrey; border-radius:4px; padding: 0 8px; min-width:15px; min-height:25px; font-size:11px;}
+        QLineEdit#search {border:1px solid lightgrey; border-radius:4px; padding: 0 8px; min-width:15px; max-width:210px; min-height:25px; font-size:11px;}
         QTabWidget::pane { border-top: 2px solid #C2C7CB;}
         QTabWidget::tab-bar {left: 5px;}
         QTableWidget {selection-background-color: lightsteelblue; }
         QListWidget:selected{color:black; background-color:lightsteelblue; selection-background-color:steelblue;}
-        
-        
+        QLabel#sessionlabel{color:steelblue; font-size:15px; background-color:white; border:1px solid steelblue; border-radius:3px; max-width:250px; }
         """
-#bigsized->setStyleSheet("background-color: yellow");
+# voi̱thós - helper
+
 app = QApplication(sys.argv)
 app.setStyleSheet(style)
+app.setApplicationName('voithos')
 window = Origin()
 window.show()
 sys.exit(app.exec_())
