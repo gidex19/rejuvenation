@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+
+    <link rel="stylesheet"  type="text/css" href="{% static 'redcloud/bootstrap.min.css' %}">
+    <link rel="stylesheet" type="text/css" href="{% static 'redcloud/main.css' %}" >
+    {% if title %}
+    <title> Redcloud-{{post.title}} </title>
+    {% else %}
+    <title> Redcloud-home </title>
+    {% endif %}
+</head>
+<header class="site-header" >
+  <nav class="navbar navbar-expand-md fixed-top navbar-dark bg-steel" id="imageback">
+    <div class = "container"  >
+      <a class="navbar-brand mr-4" href="{% url 'blog-home' %}">Django Blog</a>
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarToggle" aria-controls="navbarToggle" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+      </button>
+        <div class="navbar-nav">
+                <a class="nav-item nav-link" href="{% url 'login' %}">Login</a>
+                <a class="nav-item nav-link" href="{% url 'register' %}">Sign up</a>
+        </div>
+      </div>
+  </nav>
+</header>
+    <body>
+<div class="container">
+    <div class="row">
+        <div class="col-md-12 " id="imageportion">
+            <p> t</p>
+            <p>t</p>
+            <p>t</p>
+            <p>t</p>
+            <p>t</p>
+        </div>
+    </div>
+    <div class="row pb-4 ">
+        <div class="col-sm-4 col-md-4  p-4" id="first">
+            <div><h2>Stay connected</h2></div>
+            <div>
+                <p>
+                keep friends and close enough to feel their touch every passing second.
+                    We can help you do that
+            </p>
+            </div>
+        </div>
+
+        <div class="col-md-4 col-sm-4 p-4" id="first">
+            <div><h2> Stay Informed</h2></div>
+            <div>
+                <p>Here at voithos, we believe information is power.
+                Watch your friends have groups post information contents that will help keep you informed
+                </p>
+            </div>
+        </div>
+        <div class="col-md-4 col-sm-4 p-4" id="first">
+            <div><h2> Stay Informed</h2></div>
+            <div>
+                <p>Here at voithos, we believe information is power.
+                Watch your friends have groups post information contents that will help keep you informed
+                </p>
+            </div>
+        </div>
+    </div>
+
+        </div>
+    <div class="row bg-steel" id="foot">
+
+        <div class="col-md-2 mt-4">
+
+        </div>
+        <div class="col-md-2 p-6 mt-4  " >
+            <div>
+                <h5>First footer</h5>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+            </div>
+        </div>
+        <div class="col-md-2 p-6 mt-4" >
+            <div>
+                <h5>second footer</h5>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+            </div>
+
+        </div>
+        <div class="col-md-2 p-6 mt-4 " >
+            <div>
+                <h5>third footer</h5>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+            </div>
+
+        </div>
+        <div class="col-md-2 p-6 mt-4 " >
+            <div>
+                <h5>second footer</h5>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+                <p> Dummy data</p>
+            </div>
+
+        </div>
+        <div class="col-md-2 mt-4 ">
+
+        </div>
+    </div>
+
+</body>
+
+</html>

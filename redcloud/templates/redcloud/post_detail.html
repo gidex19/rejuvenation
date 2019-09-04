@@ -1,0 +1,64 @@
+{% extends "redcloud/base.html" %}
+{% load crispy_forms_tags %}
+{% block content %}
+<article class="media content-section">
+  <img class="rounded-circle article-img" src="{{ object.author.profile.image.url }} ">
+  <div class="media-body">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ object.author }}</a>
+      <small class="text-muted">{{ object.date_posted|date:'F Y, d' }}</small>
+      {% if object.author == user %}
+      <div>
+        <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'post-update' object.id %}">Update</a>
+        <a class="btn btn-danger btn-sm mt-1 mb-1" href="{% url 'post-delete' object.id %}">Delete</a>
+      </div>
+        {% endif %}
+    </div>
+    <h2 class="article-title">{{ object.title }}</h2>
+    <p class="article-content">{{ object.content }}</p>
+    {% with object.likes.count as like_counts %}
+      {% if  like_counts == 0 %}
+      <small> be the first to like this post </small>
+      <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">{{ object.likes.count}} Likes</a>
+      {% else %}
+        <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">{{ object.likes.count}} Likes</a>
+    {% endif %}
+    {% endwith %}
+</article>
+{% if user.is_authenticated %}
+    <div class = "content-section">
+        <form method ="POST">
+            {% csrf_token %}
+            <fieldset class="form-group">
+                <legend class="border-bottom mb-4"> Comment</legend>
+                {{ form|crispy }}
+            </fieldset>
+            <div class="form-group">
+                <button class="btn btn-outline-info" type="submit">Comment</button>
+            </div>
+        </form>
+    </div>
+{% endif %}
+  <div class="media-body">
+    {% if comments %}
+    {% for comment in comments %}
+    <article class="media content-section">
+      <a><img class="rounded-circle article-img" src="{{ comment.commentor.profile.image.url }} "></a>
+    <div class="media-body round-div">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ comment.commentor }}</a>
+      <small class="text-muted">{{ comment.date_commented|date:'F Y, d' }}</small>
+    </div>
+    <p class="article-content">{{ comment.text }}</p>
+    </div>
+    </article>
+    {% endfor %}
+    {% else %}
+    <article class="media content-section">
+    <p>There are no comments yet.</p>
+    </article>
+      {% endif %}
+  </div>
+{% endblock content %}
+
+

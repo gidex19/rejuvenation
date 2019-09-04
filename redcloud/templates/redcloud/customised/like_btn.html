@@ -1,0 +1,15 @@
+{% if user in all_likes %}
+    <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">
+        {{ post.likes.count}} Likes
+    </a>
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-detail' post.id %}">
+        {{comments_count}} Comment
+    </a>
+{% else%}
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">
+        {{ post.likes.count}} Likes
+    </a>
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-detail' post.id %}">
+        {{comments_count}} Comment
+    </a>
+{% endif %}

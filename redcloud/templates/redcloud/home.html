@@ -1,0 +1,53 @@
+{% extends "redcloud/base.html" %}
+{% load blog_tags %}
+{% block content %}
+
+{% for post in posts %}
+{% with post.comments.count as comments_count %}
+<article class="media content-section">
+  <img class="rounded-circle article-img" src=" {{ post.author.profile.image.url }} ">
+  <div class="media-body round-div">
+    <div class="article-metadata">
+      <a class="mr-2" href="#">{{ post.author }}</a>
+      <small class="text-muted">{{ post.date_posted|date:'F Y, d' }}</small>
+    </div>
+      {% if tagz %}
+        {% with post.tags.all as all_tag  %}
+      <a class="tag">Tags: </a>
+      {% for tag in all_tag %}
+          <a class="tag" href="{% url 'post_list_by_tag' tag.slug %}" > {{ tag }} </a>
+        {% endfor %}
+        {% endwith %}
+      {% else %}
+        <p> No tags for this post </p>
+      {% endif %}
+      <h4><a class="article-title" href="{% url 'post-detail' post.id %}">{{ post.title }}</a></h4>
+    <p class="article-content">{{ post.content }}</p>
+    {% with post.likes.all as all_likers %}
+    {% if user in all_likers %}
+    <a class="btn btn-info btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">
+        {{ post.likes.count}} Likes
+    </a>
+    {% else %}
+    <a class="btn btn-outline-info btn-sm mt-1 mb-1" href="{% url 'post-like' post.id %}">
+        {{ post.likes.count}} Likes
+    </a>
+    {% endif %}
+    {% endwith %}
+
+    <a class="btn btn-secondary btn-sm mt-1 mb-1" href="{% url 'post-detail' post.id %}">
+        {{comments_count}} Comment
+    </a>
+  </div>
+
+</article>
+{% endwith %}
+{% empty %}
+  {% if request.GET.q%}
+  <p>no post was found</p>
+  {% else %}
+  <p>no posts yet</p>
+  {% endif %}
+{% endfor %}
+{% endblock content %}
+
