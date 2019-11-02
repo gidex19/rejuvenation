@@ -1,7 +1,7 @@
 <ul class="list-inline">
     {% for tag in all_tags %}
         <li>
-            <a class="btn btn-sm btn-info mt-1 mb-1" href="{% url 'post_list_by_tag' tag.slug %}">{{tag}}</a>
+            <a class="btn btn-sm btn-info mt-1 mb-1" href="{% url 'post_list_by_tag' tag.slug %}" id="tag_btns">{{tag}}</a>
         </li>
     {% endfor %}
 </ul>

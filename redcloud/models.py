@@ -3,16 +3,15 @@ from django.contrib.auth.models import User
 from django.utils import timezone
 from django.urls import reverse
 from taggit.managers import TaggableManager
-
+from PIL import Image
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(User, blank=True, related_name= 'post_likes' )
     author = models.ForeignKey(User, on_delete=models.CASCADE)
+    image = models.ImageField(blank = True, null=True, upload_to='post_pics')
     tags = TaggableManager( blank=True )
-    #image = models.ImageField(upload_to='post_pics', blank=True)
-
 
     def __str__(self):
         return ('{} by {}'.format(self.title, self.author))
@@ -22,13 +21,16 @@ class Post(models.Model):
     def get_like_url(self):
         return reverse('post-like', kwargs={'pk': self.pk})
 
-    """def save(self,*args, **kwargs):
+    def save(self):
         super().save()
         img = Image.open(self.image.path)
-        if img.height > 500 or img.width>400:
-            output_size = (400,500)
+        if img.height > 450 or img.width > 450:
+            output_size = (450, 450)
             img.thumbnail(output_size)
-            img.save(self.image.path)"""
+            img.save(self.image.path)
+
+    class Meta:
+        ordering = ('-date_posted',)
 
 class Comment(models.Model):
     commentor = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -13,10 +13,13 @@ ul {
   margin: 0;
 }
 
-.bg-steel {
-  background-color: #5f788a;
+.head-con{
+  background-image: url('back.jpg');
+  position: relative;
 }
-
+.bg-steel{
+    background-color: #5f788a;
+    }
 .site-header .navbar-nav .nav-link {
   color: #cbd5db;
 }
@@ -39,8 +42,6 @@ nav.imageback{
 .content-section {
   background: #ffffff;
   padding: 10px 20px;
-  border: 1px solid #dddddd;
-  border-radius: 15px;
   margin-bottom: 10px;
 }
 .article-title {
@@ -65,7 +66,6 @@ a.article-title:hover {
 .article-metadata {
   padding-bottom: 1px;
   margin-bottom: 4px;
-  border-bottom: 1px solid #e3e3e3
 }
 
 .article-metadata a:hover {
@@ -90,7 +90,6 @@ a.article-title:hover {
   font-size: 2.5rem;
 }
 #first{
-  border:1px black solid;
 }
   background-color: black;
 #foot{

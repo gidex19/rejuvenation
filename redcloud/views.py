@@ -8,6 +8,9 @@ from django.views.generic.edit import FormMixin
 from django.shortcuts import get_object_or_404
 from taggit.models import Tag
 
+def landingpage(request):
+    return render(request, 'redcloud/firstview.html')
+
 def home(request, tag_slug = None):
     posts = Post.objects.all()
     tagz = Post.tags.all()
@@ -15,7 +18,6 @@ def home(request, tag_slug = None):
     if tag_slug:
         tagz = get_object_or_404(Tag, slug = tag_slug)
         posts = posts.filter(tags__in = [tagz])
-
 
     context = {'posts': posts,'tagz': tagz}
     return render(request, 'redcloud/home.html', context)
@@ -34,11 +36,16 @@ class PostListView(ListView):
         context['posts'] = Post.objects.all()
         context['tagz'] = Post.tags.all()
         return context
-
+"""
+def post_detail(request, pk):
+    post = get_object_or_404(Post, pk= pk)
+    context = { 'object': post}
+    return render(request, 'redcloud/post_detail.html', context)
+"""
 class PostDetailView(FormMixin, DetailView):
     model = Post
     form_class = CommentForm
-    success_url = '/'
+    success_url = '/home'
     def get_succes_url(self):
         the_pk = self.object.pk
         print('------------------------')
@@ -94,7 +101,7 @@ class PostLikeToggle(RedirectView):
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title','content']
+    fields = ['title', 'content', 'image']
     def form_valid(self, form):
         #overwriting the form_valid method to make the author of the post to be the user that sends the post request on the form
         form.instance.author = self.request.user
