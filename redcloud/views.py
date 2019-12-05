@@ -1,12 +1,37 @@
 from django.shortcuts import render
-from django.views.generic import ListView,DetailView, CreateView, UpdateView, DeleteView, RedirectView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView, DeleteView, RedirectView, View
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post
 from .models import Comment
-from .forms import CommentForm
+from .forms import CommentForm, SearchForm
 from django.views.generic.edit import FormMixin
 from django.shortcuts import get_object_or_404
 from taggit.models import Tag
+from django.http import HttpResponseRedirect, HttpResponse
+from django.template.loader import render_to_string
+from django.template import Context
+import json
+#from zeal.users.models import UserFollowers
+
+
+
+class Search(View):
+    def get(self, request):
+        form = SearchForm()
+        params = dict()
+        params["search"] = form
+        return render(request, 'redcloud/search.html', params)
+
+    def post(self, request):
+        form = SearchForm(request.POST)
+        if form.is_valid():
+            query = form.cleaned_data['query']
+            posts = Post.objects.filter(title__icontains=query)
+            context ={'query':query, 'posts': posts}
+            return_str = render_to_string('redcloud/partials/_post_search.html', context)
+            return HttpResponse(json.dumps(return_str), content_type="application/json")
+        else:
+            HttpResponseRedirect("search/")
 
 def landingpage(request):
     return render(request, 'redcloud/firstview.html')
@@ -36,6 +61,13 @@ class PostListView(ListView):
         context['posts'] = Post.objects.all()
         context['tagz'] = Post.tags.all()
         return context
+
+class PostProfileView(DetailView):
+    model = Post
+    template_name = 'redcloud/oprofile.html'
+
+
+
 """
 def post_detail(request, pk):
     post = get_object_or_404(Post, pk= pk)
@@ -46,6 +78,7 @@ class PostDetailView(FormMixin, DetailView):
     model = Post
     form_class = CommentForm
     success_url = '/home'
+
     def get_succes_url(self):
         the_pk = self.object.pk
         print('------------------------')
@@ -99,13 +132,28 @@ class PostLikeToggle(RedirectView):
                 obj.likes.add(user)
         return obj.get_absolute_url()
 
+"""class FollowToggle(LoginRequiredMixin, RedirectView):
+
+    def get_redirect_url(self, *args, **kwargs):
+        obj  = get_object_or_404(Post, pk=kwargs['pk'])
+
+        user = self.request.user
+        print(user)
+        if self.request.user=:
+            if user in obj.likes.all():
+                obj.likes.remove(user)
+            else:
+                obj.likes.add(user)
+        return obj.get_absolute_url()
+"""
+
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content', 'image']
+    fields = ['title', 'content', 'image', 'uploaded_file']
     def form_valid(self, form):
         #overwriting the form_valid method to make the author of the post to be the user that sends the post request on the form
         form.instance.author = self.request.user
-        #after obtaining tha author of the post...run the form_valid method on the parent class
+        #after obtaining the author of the post...run the form_valid method on the parent class
         return super().form_valid(form)
 
 
@@ -124,6 +172,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
             return True
         else:
             return False
+
 
 class PostDeleteView(LoginRequiredMixin, UserPassesTestMixin, DeleteView):
     model = Post

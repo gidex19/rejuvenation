@@ -42,6 +42,7 @@ urlpatterns = [
          name = 'password_reset_complete'),
     path('', include('redcloud.urls')),
     path('sitemap.xml', sitemap, {'sitemaps': sitemaps},name='django.contrib.sitemaps.views.sitemap'),
+    path('follow/<int:pk>/', users_view.FollowToggle.as_view(), name = 'follow'),
 ]
 
 if settings.DEBUG:

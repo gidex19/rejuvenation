@@ -4,20 +4,28 @@ from django.utils import timezone
 from django.urls import reverse
 from taggit.managers import TaggableManager
 from PIL import Image
+from .validators import image_validator
+from django.core.exceptions import ValidationError
+import os
+
 class Post(models.Model):
     title = models.CharField(max_length=100)
     content = models.TextField()
     date_posted = models.DateTimeField(default=timezone.now)
     likes = models.ManyToManyField(User, blank=True, related_name= 'post_likes' )
     author = models.ForeignKey(User, on_delete=models.CASCADE)
-    image = models.ImageField(blank = True, null=True, upload_to='post_pics')
+    image = models.ImageField(blank = True, null=True, upload_to='post_pics', validators=[image_validator])
+    uploaded_file = models.FileField(blank = True, null=True, upload_to='posted_file', default=None)
     tags = TaggableManager( blank=True )
+
 
     def __str__(self):
         return ('{} by {}'.format(self.title, self.author))
 
     def get_absolute_url(self):
         return reverse('post-detail', kwargs={'pk': self.pk})
+    def get_follow_url(self):
+        return reverse('post-profile', kwargs={'pk': self.pk})
     def get_like_url(self):
         return reverse('post-like', kwargs={'pk': self.pk})
 
@@ -28,6 +36,8 @@ class Post(models.Model):
             output_size = (450, 450)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+
 
     class Meta:
         ordering = ('-date_posted',)

@@ -16,3 +16,12 @@ class Profile(models.Model):
             output_size = (300,300)
             img.thumbnail(output_size)
             img.save(self.image.path)
+
+class UserFollowers(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='userfollowers')
+    date = models.DateTimeField(auto_now_add=True)
+    count = models.IntegerField(default=1)
+    followers = models.ManyToManyField(User, related_name='followers')
+
+    def __str__(self):
+        return f' {self.user} , {self.count} followers'

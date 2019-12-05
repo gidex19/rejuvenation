@@ -1,0 +1,91 @@
+[
+{
+  "model": "redcloud.post",
+  "pk": 27,
+  "fields": {
+    "title": "silicon valley",
+    "content": "live life how u want it",
+    "date_posted": "2019-11-02T12:06:55.814Z",
+    "author": 1,
+    "image": "post_pics/austin-distel-jpHw8ndwJ_Q-unsplash_s7INxsP.jpg",
+    "uploaded_file": "",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.post",
+  "pk": 28,
+  "fields": {
+    "title": "Great Geographer",
+    "content": "futmx boi ....friend from day one",
+    "date_posted": "2019-11-02T12:09:07.333Z",
+    "author": 1,
+    "image": "post_pics/LRM_EXPORT_20190119_202223.jpg",
+    "uploaded_file": "",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.post",
+  "pk": 29,
+  "fields": {
+    "title": "code life style",
+    "content": "MMMMMMMMMMMMMM",
+    "date_posted": "2019-11-02T20:09:39.868Z",
+    "author": 12,
+    "image": "post_pics/Screenshot_24.png",
+    "uploaded_file": "",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.post",
+  "pk": 31,
+  "fields": {
+    "title": "jjjjjj",
+    "content": "yyyyyyyy",
+    "date_posted": "2019-11-03T14:36:52.330Z",
+    "author": 1,
+    "image": "post_pics/140-202-2T.jpg",
+    "uploaded_file": "posted_file/51126404_373895863387959_3696930650931068928_n.mp4",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.post",
+  "pk": 32,
+  "fields": {
+    "title": "mmmmm",
+    "content": "jjjjjjjjjjjj",
+    "date_posted": "2019-11-03T14:38:04.301Z",
+    "author": 1,
+    "image": "post_pics/59845604_464341857643196_1367882951324336128_n.jpg",
+    "uploaded_file": "",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.post",
+  "pk": 33,
+  "fields": {
+    "title": "jjjjjj",
+    "content": "lllllllllllllllllll",
+    "date_posted": "2019-11-04T01:47:24.386Z",
+    "author": 13,
+    "image": "post_pics/IMG_20190127_120641.jpg",
+    "uploaded_file": "posted_file/51704383_305004600369888_7040723558867140608_n.mp4",
+    "likes": []
+  }
+},
+{
+  "model": "redcloud.comment",
+  "pk": 27,
+  "fields": {
+    "commentor": 1,
+    "post": 32,
+    "text": "my own comment on my post",
+    "date_commented": "2019-11-21T23:56:58.277Z",
+    "active": true
+  }
+}
+]

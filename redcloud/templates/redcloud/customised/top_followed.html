@@ -1,0 +1,13 @@
+<ul>
+    {% for followed in top_followed %}
+    <li class="jumbotron">
+    <img class="rounded-circle article-img" src=" {{ followed.user.profile.image.url }} ">
+        <a href="#" >{{ followed.user.username }} </a>
+        {% if followed.count <= 1 %}
+        <p> {{followed.count }} Follower</p><a class="btn btn-sm btn-outline-info" href="#">Follow</a>
+        {% else %}
+        <p> {{followed.count }} Followers</p><a class="btn btn-sm btn-outline-info" href="#">Follow</a>
+        {% endif %}
+    </li>
+    {% endfor %}
+</ul>

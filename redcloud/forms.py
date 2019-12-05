@@ -9,6 +9,11 @@ class CommentForm(forms.ModelForm):
         model = Comment
         fields =   ('text',)
 
+class SearchForm(forms.Form):
+    query = forms.CharField(
+                            widget=forms.TextInput(attrs={'size': 32, 'class': 'form-control', 'placeholder': 'Search Posts'}))
+
+
 """<div class="comment">
         <p class= "content-section">
         Comment {{ forloop.counter }} by {{ comment.name }}

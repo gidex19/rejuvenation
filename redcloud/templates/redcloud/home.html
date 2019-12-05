@@ -6,9 +6,9 @@
 {% with post.comments.count as comments_count %}
 <article class="media content-section">
   <img class="rounded-circle article-img" src=" {{ post.author.profile.image.url }} ">
-  <div class="media-body round-div">
+  <div class="media-body round-div jumbotron">
     <div class="article-metadata">
-      <a class="mr-2" href="#">{{ post.author }}</a>
+      <a class="mr-2" href="{% url 'post-profile' post.id %}">{{ post.author }}</a>
       <small class="text-muted">{{ post.date_posted|timesince }} ago</small>
     </div>
       {% if tagz %}

@@ -1,0 +1,128 @@
+.header-img {
+    background-image: url(play.jpg);
+    height: 700px;
+    width: 80%
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.bg-steel {
+    background-color: #5f788a;
+}
+/* .already-btn {
+    animation-name: already-btn;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+} */
+.div-bg{   
+    margin-top: 20em;
+    animation-name: div-slide;
+    animation-duration: 3s;
+    animation-fill-mode: forwards;
+    opacity: 0;
+}
+@keyframes div-slide{
+    0%{ opacity: 0; transform: translateX(80%);}
+    100%{ opacity: 1; transform: translateX(0%);}
+}
+.iconz{
+    width:15%;
+}
+.white{
+    color: whitesmoke;
+}
+h1, h2, h3, h4, h5, h6 {
+    color: #444444;
+  }
+.jumbo {
+    margin-top: 1em;
+    text-align: center;
+}  
+.rf {
+    flex: 1;
+}
+.img img {
+    width: 50%;
+}
+.inner_flex{
+    padding-right: 3em;
+    padding-left: 3em;
+}
+.middle{
+    transition-property: transform;
+    transition-duration: 0.2s;
+}
+.middle:hover{
+    transform: rotateZ(10deg);
+}
+.foot-div{
+    display:flex;
+    transform: skewY(4deg);
+}
+.footer-container{
+    margin-top: 6em;
+    transform: skewY(-4deg);
+}
+.logo{
+    width: 20%;
+}
+.updown{
+    animation: upanddown 1s infinite alternate;
+
+}
+@keyframes upanddown {
+    0%{
+        transform: translateY(0%);
+    }
+    100%{
+        transform: translateY(70%);
+    }
+}
+
+@media only screen and (min-width: 700px){
+    .flex_me{ display: flex;
+        width: 100%;
+        margin: 2em auto 0 auto;
+        justify-content: space-between;
+    }
+    .inner_flex{
+        box-sizing: border-box;
+        flex: 1;
+        padding-left: 0.1em;
+        padding-right: 0.1em;
+        width:32%;
+    }
+    .iconz{
+        width: 50%
+    }
+    .rf{
+        text-align:center;
+    }
+    foot-div{
+        padding-right:0px;
+    }
+}
+@media only screen and (min-width: 767px){
+    .flex_me{ display: flex;
+        width: 100%;
+        margin: 2em auto 0 auto;
+        justify-content: space-between;
+    }
+    .inner_flex{
+        box-sizing: border-box;
+        flex: 1;
+        padding-left: 0.1em;
+        padding-right: 0.1em;
+        width:32%;
+    }
+    .iconz{
+        width: 30%;
+    }
+    foot-div{
+        padding-right:0px;
+    }
+    .rf{
+        text-align: center;
+    }
+}

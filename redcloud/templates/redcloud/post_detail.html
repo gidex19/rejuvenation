@@ -14,8 +14,13 @@
       </div>
         {% endif %}
     </div>
-    <h2 class="article-title">{{ object.title }}</h2>
-    <p class="article-content">{{ object.content }}</p>
+    <h4 class="article-title">{{ object.title }}</h4>
+        {% if object.image.url %}
+      <div>
+      <img src="{{ object.image.url }}">
+      </div>
+      {% endif %}
+      <p class="article-content">{{ object.content }}</p>
     {% with object.likes.count as like_counts %}
       {% if  like_counts == 0 %}
       <small> be the first to like this post </small>

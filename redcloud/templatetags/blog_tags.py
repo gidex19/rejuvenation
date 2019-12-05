@@ -2,6 +2,7 @@ from django import template
 from redcloud.models import Post
 from django.db.models import Count
 from redcloud.models import Comment
+from users.models import UserFollowers
 register = template.Library()
 
 @register.simple_tag
@@ -33,3 +34,8 @@ def display_all_tags(count=4):
 def display_like_colours(post):
     all_likes = post.likes.all()
     return {'all_likes':all_likes}
+
+@register.inclusion_tag('redcloud/customised/top_followed.html')
+def users_follow():
+    top_followed = UserFollowers.objects.all().order_by('-count')
+    return {'top_followed': top_followed}
